@@ -99,7 +99,7 @@ async def coin(ctx, amount: int, choice: str):
 # BLACKJACK
 # ─────────────────────────────
 @bot.command()
-async def bj(ctx, bet: int):
+async def blackjack(ctx, bet: int):
     user = ctx.author.id
 
     if user not in balances:
