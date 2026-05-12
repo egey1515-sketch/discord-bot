@@ -5,6 +5,8 @@ import os
 
 TOKEN = os.getenv("TOKEN")
 
+OWNER_ID = 815578764704219136
+
 intents = discord.Intents.default()
 intents.message_content = True
 
@@ -31,6 +33,41 @@ async def balance(ctx):
     await ctx.send(f"💰 Bakiyen: {balances[user]} coin")
 
 # ─────────────────────────────
+# RECOVERY (SADECE 0 İKEN)
+# ─────────────────────────────
+@bot.command()
+async def recovery(ctx):
+    user = ctx.author.id
+
+    if user not in balances:
+        balances[user] = 0
+
+    if balances[user] > 0:
+        await ctx.send("🟡 Recovery sadece 0 coin iken kullanılır")
+        return
+
+    balances[user] = 300
+    await ctx.send("🆘 Recovery aktif: +300 coin verildi")
+
+# ─────────────────────────────
+# ADMIN MONEY (OWNER ONLY)
+# ─────────────────────────────
+@bot.command()
+async def addmoney(ctx, member: discord.Member, amount: int):
+    if ctx.author.id != OWNER_ID:
+        await ctx.send("❌ Yetkin yok")
+        return
+
+    user = member.id
+
+    if user not in balances:
+        balances[user] = 1000
+
+    balances[user] += amount
+
+    await ctx.send(f"👑 {member.name} → +{amount} coin")
+
+# ─────────────────────────────
 # COIN FLIP (BAHİSLİ)
 # ─────────────────────────────
 @bot.command()
@@ -41,7 +78,7 @@ async def coin(ctx, amount: int, choice: str):
         balances[user] = 1000
 
     if amount <= 0:
-        await ctx.send("Geçerli bir bahis gir 😄")
+        await ctx.send("Geçerli bahis gir 😄")
         return
 
     if amount > balances[user]:
@@ -50,17 +87,17 @@ async def coin(ctx, amount: int, choice: str):
 
     choice = choice.lower()
     if choice not in ["yazı", "tura"]:
-        await ctx.send("Sadece 'yazı' veya 'tura' yaz 😄")
+        await ctx.send("Sadece yazı / tura 😄")
         return
 
     result = random.choice(["yazı", "tura"])
 
     if choice == result:
         balances[user] += amount
-        await ctx.send(f"🎉 Kazandın +{amount} coin | Sonuç: {result}")
+        await ctx.send(f"🎉 Kazandın +{amount} | {result}")
     else:
         balances[user] -= amount
-        await ctx.send(f"😭 Kaybettin -{amount} coin | Sonuç: {result}")
+        await ctx.send(f"😭 Kaybettin -{amount} | {result}")
 
 # ─────────────────────────────
 # BLACKJACK START
@@ -89,10 +126,10 @@ async def blackjack(ctx, bet: int):
     }
 
     await ctx.send(
-        f"🃏 BLACKJACK BAŞLADI\n"
+        f"🃏 BLACKJACK\n"
         f"Sen: {sum(player)}\n"
         f"Dealer: {dealer[0]} + ?\n"
-        f"!hit veya !stand yaz"
+        f"!hit / !stand"
     )
 
 # ─────────────────────────────
@@ -117,12 +154,12 @@ async def hit(ctx):
     if total > 21:
         balances[user] -= game["bet"]
         del active_games[user]
-        await ctx.send(f"💥 BUST! Kaybettin")
+        await ctx.send("💥 Bust! Kaybettin")
     else:
-        await ctx.send(f"Sen: {total} | !hit / !stand")
+        await ctx.send(f"Sen: {total}")
 
 # ─────────────────────────────
-# STAND (DEALER AI)
+# STAND
 # ─────────────────────────────
 @bot.command()
 async def stand(ctx):
@@ -158,14 +195,11 @@ async def stand(ctx):
     del active_games[user]
 
     await ctx.send(
-        f"🃏 SONUÇ\n"
-        f"Sen: {player_score}\n"
-        f"Dealer: {dealer_score}\n\n"
-        f"{result}"
+        f"Sen: {player_score}\nDealer: {dealer_score}\n{result}"
     )
 
 # ─────────────────────────────
-# SA / PING
+# BASIC
 # ─────────────────────────────
 @bot.command()
 async def sa(ctx):
@@ -176,6 +210,6 @@ async def ping(ctx):
     await ctx.send("pong 🏓")
 
 # ─────────────────────────────
-# BOT RUN
+# RUN
 # ─────────────────────────────
 bot.run(TOKEN)
