@@ -33,7 +33,7 @@ async def balance(ctx):
     await ctx.send(f"💰 Bakiyen: {balances[user]} coin")
 
 # ─────────────────────────────
-# RECOVERY (SADECE 0 İKEN)
+# RECOVERY
 # ─────────────────────────────
 @bot.command()
 async def recovery(ctx):
@@ -43,14 +43,14 @@ async def recovery(ctx):
         balances[user] = 0
 
     if balances[user] > 0:
-        await ctx.send("🟡 Recovery sadece 0 coin iken kullanılır")
+        await ctx.send("🟡 Recovery sadece 0 coin iken")
         return
 
     balances[user] = 300
-    await ctx.send("🆘 Recovery aktif: +300 coin verildi")
+    await ctx.send("🆘 +300 coin verildi")
 
 # ─────────────────────────────
-# ADMIN MONEY (OWNER ONLY)
+# ADMIN MONEY
 # ─────────────────────────────
 @bot.command()
 async def addmoney(ctx, member: discord.Member, amount: int):
@@ -65,10 +65,10 @@ async def addmoney(ctx, member: discord.Member, amount: int):
 
     balances[user] += amount
 
-    await ctx.send(f"👑 {member.name} → +{amount} coin")
+    await ctx.send(f"👑 +{amount} coin verildi")
 
 # ─────────────────────────────
-# COIN FLIP (BAHİSLİ)
+# COIN FLIP
 # ─────────────────────────────
 @bot.command()
 async def coin(ctx, amount: int, choice: str):
@@ -77,30 +77,26 @@ async def coin(ctx, amount: int, choice: str):
     if user not in balances:
         balances[user] = 1000
 
-    if amount <= 0:
-        await ctx.send("Geçerli bahis gir 😄")
-        return
-
-    if amount > balances[user]:
+    if amount <= 0 or amount > balances[user]:
         await ctx.send("Yetersiz coin 😄")
         return
 
     choice = choice.lower()
     if choice not in ["yazı", "tura"]:
-        await ctx.send("Sadece yazı / tura 😄")
+        await ctx.send("yazı / tura yaz")
         return
 
     result = random.choice(["yazı", "tura"])
 
-    if choice == result:
+    if result == choice:
         balances[user] += amount
-        await ctx.send(f"🎉 Kazandın +{amount} | {result}")
+        await ctx.send(f"🎉 +{amount} | {result}")
     else:
         balances[user] -= amount
-        await ctx.send(f"😭 Kaybettin -{amount} | {result}")
+        await ctx.send(f"😭 -{amount} | {result}")
 
 # ─────────────────────────────
-# BLACKJACK START
+# BLACKJACK
 # ─────────────────────────────
 @bot.command()
 async def blackjack(ctx, bet: int):
@@ -154,12 +150,12 @@ async def hit(ctx):
     if total > 21:
         balances[user] -= game["bet"]
         del active_games[user]
-        await ctx.send("💥 Bust! Kaybettin")
+        await ctx.send("💥 BUST!")
     else:
         await ctx.send(f"Sen: {total}")
 
 # ─────────────────────────────
-# STAND
+# STAND (FIXLENMİŞ DEALER)
 # ─────────────────────────────
 @bot.command()
 async def stand(ctx):
@@ -175,12 +171,17 @@ async def stand(ctx):
         return random.randint(2, 11)
 
     dealer = game["dealer"]
+    dealer_score = sum(dealer)
 
-    while sum(dealer) < 17:
+    # ✔ FIX: 17'ye kadar çek, 21 üstü bust
+    while dealer_score < 17:
         dealer.append(draw())
+        dealer_score = sum(dealer)
+
+        if dealer_score > 21:
+            break
 
     player_score = sum(game["player"])
-    dealer_score = sum(dealer)
     bet = game["bet"]
 
     if dealer_score > 21 or player_score > dealer_score:
@@ -195,7 +196,10 @@ async def stand(ctx):
     del active_games[user]
 
     await ctx.send(
-        f"Sen: {player_score}\nDealer: {dealer_score}\n{result}"
+        f"🃏 SONUÇ\n"
+        f"Sen: {player_score}\n"
+        f"Dealer: {dealer_score}\n"
+        f"{result}"
     )
 
 # ─────────────────────────────
