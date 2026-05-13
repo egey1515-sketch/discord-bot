@@ -28,8 +28,10 @@ async def on_ready():
 @bot.command()
 async def balance(ctx):
     user = ctx.author.id
+
     if user not in balances:
         balances[user] = 1000
+
     await ctx.send(f"💰 Bakiyen: {balances[user]} coin")
 
 # ─────────────────────────────
@@ -54,6 +56,7 @@ async def recovery(ctx):
 # ─────────────────────────────
 @bot.command()
 async def addmoney(ctx, member: discord.Member, amount: int):
+
     if ctx.author.id != OWNER_ID:
         await ctx.send("❌ Yetkin yok")
         return
@@ -72,6 +75,7 @@ async def addmoney(ctx, member: discord.Member, amount: int):
 # ─────────────────────────────
 @bot.command()
 async def coin(ctx, amount: int, choice: str):
+
     user = ctx.author.id
 
     if user not in balances:
@@ -82,6 +86,7 @@ async def coin(ctx, amount: int, choice: str):
         return
 
     choice = choice.lower()
+
     if choice not in ["yazı", "tura"]:
         await ctx.send("yazı / tura yaz")
         return
@@ -96,10 +101,51 @@ async def coin(ctx, amount: int, choice: str):
         await ctx.send(f"😭 -{amount} | {result}")
 
 # ─────────────────────────────
+# SLOT MACHINE
+# ─────────────────────────────
+@bot.command()
+async def slot(ctx, bet: int):
+
+    user = ctx.author.id
+
+    if user not in balances:
+        balances[user] = 1000
+
+    if bet <= 0 or bet > balances[user]:
+        await ctx.send("Yetersiz coin 😄")
+        return
+
+    symbols = ["🍒", "🍋", "🍇", "💎", "7️⃣"]
+
+    a = random.choice(symbols)
+    b = random.choice(symbols)
+    c = random.choice(symbols)
+
+    result = f"{a} | {b} | {c}"
+
+    # JACKPOT
+    if a == b == c:
+        win = bet * 5
+        balances[user] += win
+        await ctx.send(f"🎰 {result}\n🎉 JACKPOT! +{win}")
+
+    # İKİ AYNI
+    elif a == b or b == c or a == c:
+        win = bet * 2
+        balances[user] += win
+        await ctx.send(f"🎰 {result}\n✨ Kazandın! +{win}")
+
+    # KAYBET
+    else:
+        balances[user] -= bet
+        await ctx.send(f"🎰 {result}\n😭 Kaybettin! -{bet}")
+
+# ─────────────────────────────
 # BLACKJACK
 # ─────────────────────────────
 @bot.command()
 async def blackjack(ctx, bet: int):
+
     user = ctx.author.id
 
     if user not in balances:
@@ -133,6 +179,7 @@ async def blackjack(ctx, bet: int):
 # ─────────────────────────────
 @bot.command()
 async def hit(ctx):
+
     user = ctx.author.id
 
     if user not in active_games:
@@ -145,6 +192,7 @@ async def hit(ctx):
         return random.randint(2, 11)
 
     game["player"].append(draw())
+
     total = sum(game["player"])
 
     if total > 21:
@@ -155,10 +203,11 @@ async def hit(ctx):
         await ctx.send(f"Sen: {total}")
 
 # ─────────────────────────────
-# STAND (FIXLENMİŞ DEALER)
+# STAND
 # ─────────────────────────────
 @bot.command()
 async def stand(ctx):
+
     user = ctx.author.id
 
     if user not in active_games:
@@ -173,7 +222,6 @@ async def stand(ctx):
     dealer = game["dealer"]
     dealer_score = sum(dealer)
 
-    # ✔ FIX: 17'ye kadar çek, 21 üstü bust
     while dealer_score < 17:
         dealer.append(draw())
         dealer_score = sum(dealer)
@@ -187,9 +235,11 @@ async def stand(ctx):
     if dealer_score > 21 or player_score > dealer_score:
         balances[user] += bet
         result = "🎉 KAZANDIN"
+
     elif player_score < dealer_score:
         balances[user] -= bet
         result = "😭 KAYBETTİN"
+
     else:
         result = "🤝 BERABERE"
 
