@@ -189,7 +189,7 @@ async def hit(ctx):
     game = active_games[user]
 
     def draw():
-        return random.randint(2, 11)
+        return random.randint(1, 10)
 
     game["player"].append(draw())
 
