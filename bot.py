@@ -45,7 +45,7 @@ async def recovery(ctx):
         balances[user] = 0
 
     if balances[user] > 0:
-        await ctx.send("🟡 Recovery sadece 0 coin iken")
+        await ctx.send(" Recovery sadece 0 coin iken")
         return
 
     balances[user] = 300
@@ -82,7 +82,7 @@ async def coin(ctx, amount: int, choice: str):
         balances[user] = 1000
 
     if amount <= 0 or amount > balances[user]:
-        await ctx.send("Yetersiz coin 😄")
+        await ctx.send("Yetersiz coin ")
         return
 
     choice = choice.lower()
@@ -112,7 +112,7 @@ async def slot(ctx, bet: int):
         balances[user] = 1000
 
     if bet <= 0 or bet > balances[user]:
-        await ctx.send("Yetersiz coin 😄")
+        await ctx.send("Yetersiz coin ")
         return
 
     symbols = ["🍒", "🍋", "🍇", "💎", "7️⃣"]
@@ -152,7 +152,7 @@ async def blackjack(ctx, bet: int):
         balances[user] = 1000
 
     if bet > balances[user]:
-        await ctx.send("Yetersiz coin 😄")
+        await ctx.send("Yetersiz coin ")
         return
 
     def draw():
@@ -183,7 +183,7 @@ async def hit(ctx):
     user = ctx.author.id
 
     if user not in active_games:
-        await ctx.send("Oyun yok 😄")
+        await ctx.send("Oyun yok ")
         return
 
     game = active_games[user]
@@ -261,7 +261,7 @@ async def sa(ctx):
 
 @bot.command()
 async def ping(ctx):
-    await ctx.send("pong 🏓")
+    await ctx.send("pong ")
 
 # ─────────────────────────────
 # RUN
