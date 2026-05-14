@@ -294,6 +294,31 @@ async def sa(ctx):
 async def ping(ctx):
     await ctx.send(" pong")
 
+#-------------------------------
+
+@bot.command()
+async def top(ctx):
+
+    if not balances:
+        await ctx.send(" Hiç kullanıcı yok")
+        return
+
+    sorted_balances = sorted(
+        balances.items(),
+        key=lambda x: x[1],
+        reverse=True
+    )
+
+    text = "🏆 Sıralama:\n\n"
+
+    for i, (user_id, balance) in enumerate(sorted_balances[:10], start=1):
+
+        user = await bot.fetch_user(user_id)
+
+        text += f"{i}. {user.name} - {balance} coin\n"
+
+    await ctx.send(text)
+
 # ─────────────────────────────
 # RUN
 # ─────────────────────────────
