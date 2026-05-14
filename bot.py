@@ -272,14 +272,14 @@ async def dice(ctx, bet: int):
 
     if player > dealer:
         balances[user] += bet
-        result = f"🎲 Sen: {player}\n🎲 Dealer: {dealer}\n Kazandın +{bet}"
+        result = f" Sen: {player}\n Dealer: {dealer}\n Kazandın +{bet}"
 
     elif player < dealer:
         balances[user] -= bet
-        result = f"🎲 Sen: {player}\n🎲 Dealer: {dealer}\n Kaybettin -{bet}"
+        result = f" Sen: {player}\n Dealer: {dealer}\n Kaybettin -{bet}"
 
     else:
-        result = f"🎲 Sen: {player}\n🎲 Dealer: {dealer}\n Berabere"
+        result = f" Sen: {player}\n Dealer: {dealer}\n Berabere"
 
     await ctx.send(result)
 
