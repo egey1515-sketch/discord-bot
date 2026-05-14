@@ -1,4 +1,3 @@
-python
 import discord
 from discord.ext import commands
 import random
@@ -53,6 +52,9 @@ async def recovery(ctx):
     await ctx.send(" +300 coin verildi")
 
 # ─────────────────────────────
+    if user not in balances:
+        balances[user] = 1000
+
 # ADMIN MONEY
 # ─────────────────────────────
 @bot.command()
