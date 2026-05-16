@@ -403,24 +403,24 @@ async def work(ctx):
     if user not in balances:
         balances[user] = 1000
 
-        #cooldown
-        if user in work_cooldown:
+    # cooldown
+    if user in work_cooldown:
 
-            if now - work_cooldown[user] < 600:
+        if now - work_cooldown[user] < 600:
 
-                remaining = int(600 - (now - work_cooldown[user]))
-                minutes = remaining // 60
-                seconds = remaining % 60
+            remaining = int(600 - (now - work_cooldown[user]))
+            minutes = remaining // 60
+            seconds = remaining % 60
 
-                await ctx.send(f"Work cooldown: {mintues}dk {seconds}sn kaldı")
-                return
-            
-            earnings = random.randtint(80,200)
+            await ctx.send(f" Work cooldown: {minutes}dk {seconds}sn kaldı")
+            return
 
-            balances[user] += earnings
-            work_cooldown[user] = now
+    earnings = random.randint(80, 200)
 
-            await ctx.send(f"Çalıştın ve +{earnings} coin kazandın")
+    balances[user] += earnings
+    work_cooldown[user] = now
+
+    await ctx.send(f" Çalıştın ve +{earnings} coin kazandın")
 
 # ─────────────────────────────
 # RUN
