@@ -422,6 +422,37 @@ async def work(ctx):
 
     await ctx.send(f" Çalıştın ve +{earnings} coin kazandın")
 
+    #----------------------
+    #give
+    @bot.command()
+    async def give(ctx, member: discord.Member, amount:int):
+
+        sender = ctx.author.id
+        reciever = member.id
+
+        if sender not in balances:
+            balances[sender] = 1000
+
+            if reciever not in balances:
+                balances[reciever] = 1000
+
+                if amount <= 0:
+                    await ctx.send("Eksi miktar girilemez,Geçerli POZİTİF bir miktar gir")
+                    return
+                
+                if balances[sender] < amount:
+                    await ctx.send("Yetersiz coin")
+                    return
+                
+                balances[sender] -= amount
+                balances[reciever] += amount
+
+                await ctx.send(
+                    f" {ctx.author.mention} → {member.mention}\n"
+                    f"{amount} coin gönderildi"
+    )
+
+
 # ─────────────────────────────
 # RUN
 # ─────────────────────────────
