@@ -16,6 +16,7 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 balances = {}
 active_games = {}
 daily_cooldown = {}
+work_cooldown = {}
 
 # ─────────────────────────────
 # BOT READY
@@ -390,6 +391,36 @@ async def sa(ctx):
 @bot.command()
 async def ping(ctx):
     await ctx.send(" pong")
+
+#--------------------------
+#!work
+@bot.command()
+async def work(ctx):
+
+    user = ctx.author.id
+    now = time.time()
+
+    if user not in balances:
+        balances[user] = 1000
+
+        #cooldown
+        if user in work_cooldown:
+
+            if now - work_cooldown[user] < 600:
+
+                remaining = int(600 - (now - work_cooldown[user]))
+                minutes = remaining // 60
+                seconds = remaining % 60
+
+                await ctx.send(f"Work cooldown: {mintues}dk {seconds}sn kaldı")
+                return
+            
+            earnings = random.randtint(80,200)
+
+            balances[user] += earnings
+            work_cooldown[user] = now
+
+            await ctx.send(f"Çalıştın ve +{earnings} coin kazandın")
 
 # ─────────────────────────────
 # RUN
