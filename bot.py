@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import random
 import os
+import time
 
 TOKEN = os.getenv("TOKEN")
 
@@ -14,6 +15,7 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 
 balances = {}
 active_games = {}
+daily_cooldown = {}
 
 # ─────────────────────────────
 # BOT READY
@@ -27,18 +29,20 @@ async def on_ready():
 # ─────────────────────────────
 @bot.command()
 async def balance(ctx):
+
     user = ctx.author.id
 
     if user not in balances:
         balances[user] = 1000
 
-    await ctx.send(f"💰 Bakiyen: {balances[user]} coin")
+    await ctx.send(f" Bakiyen: {balances[user]} coin")
 
 # ─────────────────────────────
 # RECOVERY
 # ─────────────────────────────
 @bot.command()
 async def recovery(ctx):
+
     user = ctx.author.id
 
     if user not in balances:
@@ -49,19 +53,17 @@ async def recovery(ctx):
         return
 
     balances[user] = 300
+
     await ctx.send(" +300 coin verildi")
 
 # ─────────────────────────────
-    if user not in balances:
-        balances[user] = 1000
-
 # ADMIN MONEY
 # ─────────────────────────────
 @bot.command()
 async def addmoney(ctx, member: discord.Member, amount: int):
 
     if ctx.author.id != OWNER_ID:
-        await ctx.send("❌ Yetkin yok")
+        await ctx.send(" Yetkin yok")
         return
 
     user = member.id
@@ -71,7 +73,7 @@ async def addmoney(ctx, member: discord.Member, amount: int):
 
     balances[user] += amount
 
-    await ctx.send(f"👑 {member.mention} kullanıcısına +{amount} coin verildi")
+    await ctx.send(f" {member.mention} kullanıcısına +{amount} coin verildi")
 
 # ─────────────────────────────
 # COIN FLIP
@@ -91,17 +93,18 @@ async def coin(ctx, amount: int, choice: str):
     choice = choice.lower()
 
     if choice not in ["yazı", "tura"]:
-        await ctx.send(" yazı / tura yaz")
+        await ctx.send("yazı / tura yaz")
         return
 
     result = random.choice(["yazı", "tura"])
 
     if result == choice:
         balances[user] += amount
-        await ctx.send(f" +{amount} coin kazandın | Sonuç: {result}")
+        await ctx.send(f"✅ +{amount} coin kazandın | Sonuç: {result}")
+
     else:
         balances[user] -= amount
-        await ctx.send(f" -{amount} coin kaybettin | Sonuç: {result}")
+        await ctx.send(f"❌ -{amount} coin kaybettin | Sonuç: {result}")
 
 # ─────────────────────────────
 # SLOT MACHINE
@@ -115,7 +118,7 @@ async def slot(ctx, bet: int):
         balances[user] = 1000
 
     if bet <= 0 or bet > balances[user]:
-        await ctx.send("❌ Yetersiz coin")
+        await ctx.send(" Yetersiz coin")
         return
 
     symbols = ["🍒", "🍋", "🍇", "💎", "7️⃣"]
@@ -128,20 +131,26 @@ async def slot(ctx, bet: int):
 
     # JACKPOT
     if a == b == c:
+
         win = bet * 5
         balances[user] += win
-        await ctx.send(f" {result}\n JACKPOT! +{win}")
+
+        await ctx.send(f" {result}\n💎 JACKPOT! +{win}")
 
     # İKİ AYNI
     elif a == b or b == c or a == c:
+
         win = bet * 2
         balances[user] += win
-        await ctx.send(f"🎰 {result}\n Kazandın! +{win}")
+
+        await ctx.send(f" {result}\n✅ Kazandın! +{win}")
 
     # KAYBET
     else:
+
         balances[user] -= bet
-        await ctx.send(f"🎰 {result}\n Kaybettin! -{bet}")
+
+        await ctx.send(f" {result}\n❌ Kaybettin! -{bet}")
 
 # ─────────────────────────────
 # BLACKJACK
@@ -155,7 +164,7 @@ async def blackjack(ctx, bet: int):
         balances[user] = 1000
 
     if bet <= 0 or bet > balances[user]:
-        await ctx.send("Yetersiz coin")
+        await ctx.send(" Yetersiz coin")
         return
 
     def draw():
@@ -199,10 +208,15 @@ async def hit(ctx):
     total = sum(game["player"])
 
     if total > 21:
+
         balances[user] -= game["bet"]
+
         del active_games[user]
+
         await ctx.send(f" BUST! Toplam: {total}")
+
     else:
+
         await ctx.send(f" Yeni kart çekildi\nToplam: {total}")
 
 # ─────────────────────────────
@@ -214,7 +228,7 @@ async def stand(ctx):
     user = ctx.author.id
 
     if user not in active_games:
-        await ctx.send(" Aktif oyun yok")
+        await ctx.send("❌ Aktif oyun yok")
         return
 
     game = active_games[user]
@@ -233,14 +247,17 @@ async def stand(ctx):
     bet = game["bet"]
 
     if dealer_score > 21 or player_score > dealer_score:
+
         balances[user] += bet
         result = f" Kazandın! +{bet}"
 
     elif player_score < dealer_score:
+
         balances[user] -= bet
         result = f" Kaybettin! -{bet}"
 
     else:
+
         result = " Berabere"
 
     del active_games[user]
@@ -271,31 +288,75 @@ async def dice(ctx, bet: int):
     dealer = random.randint(1, 6)
 
     if player > dealer:
+
         balances[user] += bet
-        result = f" Sen: {player}\n Dealer: {dealer}\n Kazandın +{bet}"
+
+        result = (
+            f" Sen: {player}\n"
+            f" Dealer: {dealer}\n"
+            f" Kazandın +{bet}"
+        )
 
     elif player < dealer:
+
         balances[user] -= bet
-        result = f" Sen: {player}\n Dealer: {dealer}\n Kaybettin -{bet}"
+
+        result = (
+            f" Sen: {player}\n"
+            f" Dealer: {dealer}\n"
+            f" Kaybettin -{bet}"
+        )
 
     else:
-        result = f" Sen: {player}\n Dealer: {dealer}\n Berabere"
+
+        result = (
+            f" Sen: {player}\n"
+            f" Dealer: {dealer}\n"
+            f" Berabere"
+        )
 
     await ctx.send(result)
 
 # ─────────────────────────────
-# BASIC
+# DAILY
 # ─────────────────────────────
 @bot.command()
-async def sa(ctx):
-    await ctx.send("as kanka")
+async def daily(ctx):
 
-@bot.command()
-async def ping(ctx):
-    await ctx.send(" pong")
+    user = ctx.author.id
+    now = time.time()
 
-#-------------------------------
+    if user not in balances:
+        balances[user] = 1000
 
+    if user in daily_cooldown:
+
+        elapsed = now - daily_cooldown[user]
+
+        if elapsed < 86400:
+
+            remaining = int(86400 - elapsed)
+
+            hours = remaining // 3600
+            minutes = (remaining % 3600) // 60
+
+            await ctx.send(
+                f" Daily zaten alınmış\n"
+                f"Kalan süre: {hours}s {minutes}dk"
+            )
+
+            return
+
+    reward = random.randint(200, 500)
+
+    balances[user] += reward
+    daily_cooldown[user] = now
+
+    await ctx.send(f" Daily aldın! +{reward} coin")
+
+# ─────────────────────────────
+# TOP
+# ─────────────────────────────
 @bot.command()
 async def top(ctx):
 
@@ -309,7 +370,7 @@ async def top(ctx):
         reverse=True
     )
 
-    text = "🏆 Sıralama:\n\n"
+    text = " Sıralama:\n\n"
 
     for i, (user_id, balance) in enumerate(sorted_balances[:10], start=1):
 
@@ -320,7 +381,17 @@ async def top(ctx):
     await ctx.send(text)
 
 # ─────────────────────────────
+# BASIC
+# ─────────────────────────────
+@bot.command()
+async def sa(ctx):
+    await ctx.send("as kanka")
+
+@bot.command()
+async def ping(ctx):
+    await ctx.send(" pong")
+
+# ─────────────────────────────
 # RUN
 # ─────────────────────────────
-bot.run(TOKEN)
-
+bot.run(TOKEN) 
