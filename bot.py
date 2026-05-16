@@ -101,11 +101,11 @@ async def coin(ctx, amount: int, choice: str):
 
     if result == choice:
         balances[user] += amount
-        await ctx.send(f"✅ +{amount} coin kazandın | Sonuç: {result}")
+        await ctx.send(f" +{amount} coin kazandın | Sonuç: {result}")
 
     else:
         balances[user] -= amount
-        await ctx.send(f"❌ -{amount} coin kaybettin | Sonuç: {result}")
+        await ctx.send(f" -{amount} coin kaybettin | Sonuç: {result}")
 
 # ─────────────────────────────
 # SLOT MACHINE
@@ -130,13 +130,13 @@ async def slot(ctx, bet: int):
 
     result = f"{a} | {b} | {c}"
 
-    # JACKPOT
+    # JACKPOT:
     if a == b == c:
 
         win = bet * 5
         balances[user] += win
 
-        await ctx.send(f" {result}\n💎 JACKPOT! +{win}")
+        await ctx.send(f" {result}\n JACKPOT! +{win}")
 
     # İKİ AYNI
     elif a == b or b == c or a == c:
@@ -144,14 +144,14 @@ async def slot(ctx, bet: int):
         win = bet * 2
         balances[user] += win
 
-        await ctx.send(f" {result}\n✅ Kazandın! +{win}")
+        await ctx.send(f" {result}\n Kazandın! +{win}")
 
     # KAYBET
     else:
 
         balances[user] -= bet
 
-        await ctx.send(f" {result}\n❌ Kaybettin! -{bet}")
+        await ctx.send(f" {result}\n Kaybettin! -{bet}")
 
 # ─────────────────────────────
 # BLACKJACK
@@ -229,7 +229,7 @@ async def stand(ctx):
     user = ctx.author.id
 
     if user not in active_games:
-        await ctx.send("❌ Aktif oyun yok")
+        await ctx.send(" Aktif oyun yok")
         return
 
     game = active_games[user]
