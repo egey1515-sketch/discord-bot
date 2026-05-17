@@ -17,6 +17,7 @@ balances = {}
 active_games = {}
 daily_cooldown = {}
 work_cooldown = {}
+rob_cooldown = {}
 
 # ─────────────────────────────
 # BOT READY
@@ -36,7 +37,7 @@ async def balance(ctx):
     if user not in balances:
         balances[user] = 1000
 
-    await ctx.send(f" Bakiyen: {balances[user]} coin")
+    await ctx.send(f"Bakiyen: {balances[user]} coin")
 
 # ─────────────────────────────
 # RECOVERY
@@ -50,12 +51,12 @@ async def recovery(ctx):
         balances[user] = 0
 
     if balances[user] > 0:
-        await ctx.send(" Recovery sadece 0 coin iken kullanılabilir")
+        await ctx.send("Recovery sadece 0 coin iken kullanılabilir")
         return
 
     balances[user] = 300
 
-    await ctx.send(" +300 coin verildi")
+    await ctx.send("+300 coin verildi")
 
 # ─────────────────────────────
 # ADMIN MONEY
@@ -64,7 +65,7 @@ async def recovery(ctx):
 async def addmoney(ctx, member: discord.Member, amount: int):
 
     if ctx.author.id != OWNER_ID:
-        await ctx.send(" Yetkin yok")
+        await ctx.send("Yetkin yok")
         return
 
     user = member.id
@@ -74,7 +75,7 @@ async def addmoney(ctx, member: discord.Member, amount: int):
 
     balances[user] += amount
 
-    await ctx.send(f" {member.mention} kullanıcısına +{amount} coin verildi")
+    await ctx.send(f"{member.mention} kullanıcısına +{amount} coin verildi")
 
 # ─────────────────────────────
 # COIN FLIP
@@ -88,7 +89,7 @@ async def coin(ctx, amount: int, choice: str):
         balances[user] = 1000
 
     if amount <= 0 or amount > balances[user]:
-        await ctx.send(" Yetersiz coin")
+        await ctx.send("Yetersiz coin")
         return
 
     choice = choice.lower()
@@ -101,11 +102,11 @@ async def coin(ctx, amount: int, choice: str):
 
     if result == choice:
         balances[user] += amount
-        await ctx.send(f" +{amount} coin kazandın | Sonuç: {result}")
+        await ctx.send(f"+{amount} coin kazandın | Sonuç: {result}")
 
     else:
         balances[user] -= amount
-        await ctx.send(f" -{amount} coin kaybettin | Sonuç: {result}")
+        await ctx.send(f"-{amount} coin kaybettin | Sonuç: {result}")
 
 # ─────────────────────────────
 # SLOT MACHINE
@@ -119,7 +120,7 @@ async def slot(ctx, bet: int):
         balances[user] = 1000
 
     if bet <= 0 or bet > balances[user]:
-        await ctx.send(" Yetersiz coin")
+        await ctx.send("Yetersiz coin")
         return
 
     symbols = ["🍒", "🍋", "🍇", "💎", "7️⃣"]
@@ -133,16 +134,16 @@ async def slot(ctx, bet: int):
     if a == b == c:
         win = bet * 5
         balances[user] += win
-        await ctx.send(f" {result}\n JACKPOT! +{win}")
+        await ctx.send(f"{result}\nJACKPOT! +{win}")
 
     elif a == b or b == c or a == c:
         win = bet * 2
         balances[user] += win
-        await ctx.send(f" {result}\n Kazandın! +{win}")
+        await ctx.send(f"{result}\nKazandın! +{win}")
 
     else:
         balances[user] -= bet
-        await ctx.send(f" {result}\n Kaybettin! -{bet}")
+        await ctx.send(f"{result}\nKaybettin! -{bet}")
 
 # ─────────────────────────────
 # BLACKJACK
@@ -156,7 +157,7 @@ async def blackjack(ctx, bet: int):
         balances[user] = 1000
 
     if bet <= 0 or bet > balances[user]:
-        await ctx.send(" Yetersiz coin")
+        await ctx.send("Yetersiz coin")
         return
 
     def draw():
@@ -187,7 +188,7 @@ async def hit(ctx):
     user = ctx.author.id
 
     if user not in active_games:
-        await ctx.send(" Aktif oyun yok")
+        await ctx.send("Aktif oyun yok")
         return
 
     game = active_games[user]
@@ -202,10 +203,10 @@ async def hit(ctx):
     if total > 21:
         balances[user] -= game["bet"]
         del active_games[user]
-        await ctx.send(f" BUST! Toplam: {total}")
+        await ctx.send(f"BUST! Toplam: {total}")
 
     else:
-        await ctx.send(f" Yeni kart çekildi\nToplam: {total}")
+        await ctx.send(f"Yeni kart çekildi\nToplam: {total}")
 
 # ─────────────────────────────
 # STAND
@@ -216,7 +217,7 @@ async def stand(ctx):
     user = ctx.author.id
 
     if user not in active_games:
-        await ctx.send(" Aktif oyun yok")
+        await ctx.send("Aktif oyun yok")
         return
 
     game = active_games[user]
@@ -236,14 +237,14 @@ async def stand(ctx):
 
     if dealer_score > 21 or player_score > dealer_score:
         balances[user] += bet
-        result = f" Kazandın! +{bet}"
+        result = f"Kazandın! +{bet}"
 
     elif player_score < dealer_score:
         balances[user] -= bet
-        result = f" Kaybettin! -{bet}"
+        result = f"Kaybettin! -{bet}"
 
     else:
-        result = " Berabere"
+        result = "Berabere"
 
     del active_games[user]
 
@@ -266,7 +267,7 @@ async def dice(ctx, bet: int):
         balances[user] = 1000
 
     if bet <= 0 or bet > balances[user]:
-        await ctx.send(" Yetersiz coin")
+        await ctx.send("Yetersiz coin")
         return
 
     player = random.randint(1, 6)
@@ -274,14 +275,14 @@ async def dice(ctx, bet: int):
 
     if player > dealer:
         balances[user] += bet
-        result = f" Sen: {player}\n Dealer: {dealer}\n Kazandın +{bet}"
+        result = f"Sen: {player}\nDealer: {dealer}\nKazandın +{bet}"
 
     elif player < dealer:
         balances[user] -= bet
-        result = f" Sen: {player}\n Dealer: {dealer}\n Kaybettin -{bet}"
+        result = f"Sen: {player}\nDealer: {dealer}\nKaybettin -{bet}"
 
     else:
-        result = f" Sen: {player}\n Dealer: {dealer}\n Berabere"
+        result = f"Sen: {player}\nDealer: {dealer}\nBerabere"
 
     await ctx.send(result)
 
@@ -306,7 +307,7 @@ async def daily(ctx):
             minutes = (remaining % 3600) // 60
 
             await ctx.send(
-                f" Daily zaten alınmış\n"
+                f"Daily zaten alınmış\n"
                 f"Kalan süre: {hours}s {minutes}dk"
             )
             return
@@ -316,7 +317,7 @@ async def daily(ctx):
     balances[user] += reward
     daily_cooldown[user] = now
 
-    await ctx.send(f" Daily aldın! +{reward} coin")
+    await ctx.send(f"Daily aldın! +{reward} coin")
 
 # ─────────────────────────────
 # TOP
@@ -325,12 +326,12 @@ async def daily(ctx):
 async def top(ctx):
 
     if not balances:
-        await ctx.send(" Hiç kullanıcı yok")
+        await ctx.send("Hiç kullanıcı yok")
         return
 
     sorted_balances = sorted(balances.items(), key=lambda x: x[1], reverse=True)
 
-    text = " Sıralama:\n\n"
+    text = "Sıralama:\n\n"
 
     for i, (user_id, balance) in enumerate(sorted_balances[:10], start=1):
         user = await bot.fetch_user(user_id)
@@ -347,7 +348,7 @@ async def sa(ctx):
 
 @bot.command()
 async def ping(ctx):
-    await ctx.send(" pong")
+    await ctx.send("pong")
 
 # ─────────────────────────────
 # WORK
@@ -363,10 +364,12 @@ async def work(ctx):
 
     if user in work_cooldown:
         if now - work_cooldown[user] < 600:
+
             remaining = int(600 - (now - work_cooldown[user]))
             minutes = remaining // 60
             seconds = remaining % 60
-            await ctx.send(f" Work cooldown: {minutes}dk {seconds}sn kaldı")
+
+            await ctx.send(f"Work cooldown: {minutes}dk {seconds}sn kaldı")
             return
 
     earnings = random.randint(80, 200)
@@ -374,25 +377,25 @@ async def work(ctx):
     balances[user] += earnings
     work_cooldown[user] = now
 
-    await ctx.send(f" Çalıştın ve +{earnings} coin kazandın")
+    await ctx.send(f"Çalıştın ve +{earnings} coin kazandın")
 
 # ─────────────────────────────
-# GIVE (FIXED OUTSIDE WORK)
+# GIVE
 # ─────────────────────────────
 @bot.command()
 async def give(ctx, member: discord.Member, amount: int):
 
     sender = ctx.author.id
-    reciever = member.id
+    receiver = member.id
 
     if sender not in balances:
         balances[sender] = 1000
 
-    if reciever not in balances:
-        balances[reciever] = 1000
+    if receiver not in balances:
+        balances[receiver] = 1000
 
     if amount <= 0:
-        await ctx.send("Eksi miktar girilemez, Geçerli POZİTİF bir miktar gir")
+        await ctx.send("Eksi miktar girilemez")
         return
 
     if balances[sender] < amount:
@@ -400,12 +403,81 @@ async def give(ctx, member: discord.Member, amount: int):
         return
 
     balances[sender] -= amount
-    balances[reciever] += amount
+    balances[receiver] += amount
 
     await ctx.send(
         f"{ctx.author.mention} → {member.mention}\n"
         f"{amount} coin gönderildi"
     )
+
+# ─────────────────────────────
+# ROB
+# ─────────────────────────────
+@bot.command()
+async def rob(ctx, member: discord.Member):
+
+    robber = ctx.author.id
+    victim = member.id
+    now = time.time()
+
+    if robber == victim:
+        await ctx.send("Kendini soyamazsın")
+        return
+
+    if robber not in balances:
+        balances[robber] = 1000
+
+    if victim not in balances:
+        balances[victim] = 1000
+
+    # cooldown
+    if robber in rob_cooldown:
+
+        if now - rob_cooldown[robber] < 900:
+
+            remaining = int(900 - (now - rob_cooldown[robber]))
+            minutes = remaining // 60
+            seconds = remaining % 60
+
+            await ctx.send(
+                f"Rob cooldown: {minutes}dk {seconds}sn"
+            )
+            return
+
+    # fakir kontrol
+    if balances[victim] < 100:
+        await ctx.send("Herif çok fakir")
+        return
+
+    success = random.randint(1, 100)
+
+    if success <= 50:
+
+        amount = random.randint(50, 300)
+
+        if amount > balances[victim]:
+            amount = balances[victim]
+
+        balances[victim] -= amount
+        balances[robber] += amount
+
+        await ctx.send(
+            f"🦹 {member.mention} soyuldu!\n"
+            f"+{amount} coin çaldın"
+        )
+
+    else:
+
+        penalty = random.randint(50, 150)
+
+        balances[robber] -= penalty
+
+        await ctx.send(
+            f"Polis tarafından Yakalandın\n"
+            f"-{penalty} coin ceza"
+        )
+
+    rob_cooldown[robber] = now
 
 # ─────────────────────────────
 # RUN
