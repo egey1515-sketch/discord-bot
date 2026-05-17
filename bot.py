@@ -462,7 +462,7 @@ async def rob(ctx, member: discord.Member):
         balances[robber] += amount
 
         await ctx.send(
-            f"🦹 {member.mention} soyuldu!\n"
+            f" {member.mention} soyuldu!\n"
             f"+{amount} coin çaldın"
         )
 
